@@ -332,6 +332,10 @@ def updateemployee():
         print("9. for updating Joiningdate of employee")
         print("10. for updating Salary of employee")
         dept="SELECT DeptName FROM EMPLOYEE WHERE Id=%d"%(id)
+        cur.execute(dept)
+        dpt=cur.fetchall()
+        for dp in dpt:
+            dept=dp
         x=int(input())
         query=0
         if(x==1):
@@ -422,29 +426,149 @@ def delbranch():
         print("Failed to insert into database")
         print (">>>>>>>>>>>>>", e)
 
-def transaction():
+def showtransactions():
     try:
-        trans={}
-        print("Please enter all the transaction's details: ")
-        trans["Transaction_id"]=int(input("Please enter the transaction id: "))
-        trans["Cust_accnt_number"]=int(input("Please enter the account number: "))
-        trans["Amount"]=int(input("Please enter the amount: "))
-        trans["Type"]=input("Tell whether transaction is deposit or withdrawal: ")
-        # if(trans["Type"]=="Withdrawal"):
-            # withdrawal(trans["Transaction_id"],trans["Amount"])
-        # else:
-            # deposit(trans["Transaction_id"],trans["Amount"])
-
-        query="INSERT INTO TRANSACTION("Transaction_id","Cust_accnt_number","Amount","Type") VALUES (%d,%d,%d,'%s')"%(trans["Transaction_id"],trans["Cust_accnt_number"],trans["Amount"],trans["Type"])
+        query="SELECT * FROM TRANSACTION"
         print(query)
         cur.execute(query)
+        rows=cur.fetchall()
+        for row in rows:
+            print(row)
+    except Exception as e:
+        con.rollback()
+        print("Failed to insert into database")
+        print (">>>>>>>>>>>>>", e)
+
+def showloan():
+    try:
+        query="SELECT * FROM LOAN"
+        print(query)
+        cur.execute(query)
+        rows=cur.fetchall()
+        for row in rows:
+            print(row)
+    except Exception as e:
+        con.rollback()
+        print("Failed to insert into database")
+        print (">>>>>>>>>>>>>", e)
+        
+# def transaction():
+#     try:
+#         trans={}
+#         print("Please enter all the transaction's details: ")
+#         trans["Transaction_id"]=int(input("Please enter the transaction id: "))
+#         trans["Cust_accnt_number"]=int(input("Please enter the account number: "))
+#         trans["Amount"]=int(input("Please enter the amount: "))
+#         trans["Type"]=input("Tell whether transaction is deposit or withdrawal: ")
+#         if(trans["Type"]=="Withdrawal"):
+#             withdrawal(trans["Transaction_id"],trans["Amount"])
+#         else:
+#             deposit(trans["Transaction_id"],trans["Amount"])
+
+#         query="INSERT INTO TRANSACTION("Transaction_id","Cust_accnt_number","Amount","Type") VALUES (%d,%d,%d,'%s')"%(trans["Transaction_id"],trans["Cust_accnt_number"],trans["Amount"],trans["Type"])
+#         print(query)
+#         cur.execute(query)
+#         con.commit()
+
+#     except Exception as e:
+#         con.rollback()
+#         print("Failed to insert into database")
+#         print (">>>>>>>>>>>>>", e)
+
+def deposit():
+    try:
+        dep={}
+        print("Please provide following details regarding deposition: ")
+        dep["AccountNumber"]=int(chkaccnt())
+        dep["BranchNumber"]=int(input("Enter Branch Number where deposition takes place: "))
+        dep["Amount"]=int(input("Enter amount that has been deposited: "))
+        query="INSERT INTO DEPOSIT("AccountNumber","BranchNumber","Amount") VALUES (%d,%d,%d)"%(dep["AccountNumber"],dep["BranchNumber"],dep["Amount"])
+        
+        print(query)
+        cur.execute(query)
+        # con.commit()
+
+        query="INSERT INTO TRANSACTION("Cust_accnt_number","Amount","Type") VALUES (%d,%d,'%s')"%(dep["Cust_accnt_number"],dep["Amount"],"Deposit")
+        print(query)
+        cur.execute(query)
+        # con.commit()
+
+        quer="SELECT BALANCE FROM CUSTOMER WHERE AccountNumber=%d"%(dep["AccountNumber"])
+        print(query)
+        cur.execute(query)
+        x1=cur.fetchall()
+        bal=0
+        for x in x1:
+            bal=x
+        bala=bal+dep["Amount"]
+        quer="UPDATE CUSTOMER SET BALANCE=%d WHERE AccountNumber=%d"%(bala,dep["AccountNumber"])
+        print(quer)
+        cur.execute(quer)
+        con.commit()
+
+
+    except Exception as e:
+        con.rollback()
+        print("Failed to insert into database")
+        print (">>>>>>>>>>>>>", e)
+
+
+def withdrawal():
+    try:
+        dep={}
+        print("Please provide following details regarding withdrawal: ")
+        dep["AccountNumber"]=int(chkaccnt())
+        dep["BranchNumber"]=int(input("Enter Branch Number where withdrawal takes place: "))
+        dep["Amount"]=int(input("Enter amount that has been withdraw: "))
+        query="INSERT INTO WITHDRAW("AccountNumber","BranchNumber","Amount") VALUES (%d,%d,%d)"%(dep["AccountNumber"],dep["BranchNumber"],dep["Amount"])
+        
+        print(query)
+        cur.execute(query)
+        # con.commit()
+
+        query="INSERT INTO TRANSACTION("Cust_accnt_number","Amount","Type") VALUES (%d,%d,'%s')"%(dep["Cust_accnt_number"],dep["Amount"],"Withdraw")
+        print(query)
+        cur.execute(query)
+        # con.commit()
+
+        quer="SELECT BALANCE FROM CUSTOMER WHERE AccountNumber=%d"%(dep["AccountNumber"])
+        print(query)
+        cur.execute(query)
+        x1=cur.fetchall()
+        bal=0
+        for x in x1:
+            bal=x
+        bala=bal-dep["Amount"]
+        quer="UPDATE CUSTOMER SET BALANCE=%d WHERE AccountNumber=%d"%(bala,dep["AccountNumber"])
+        print(quer)
+        cur.execute(quer)
         con.commit()
 
     except Exception as e:
         con.rollback()
         print("Failed to insert into database")
         print (">>>>>>>>>>>>>", e)
-        
+
+def loan():
+    try:
+        print("Please enter the following details regarding loan: ")
+        loan={}
+        loan["AccountNumber"]=int(chkaccnt())
+        loan["BranchNumber"]=int(input("Enter Branch Number: "))
+        loan["E_id"]=int(chkid(0))
+        loan["Guarantee_accnt_no"]=int(chkaccnt())
+        loan["Amount"]=int(input("Enter the loan amount: "))
+        loan["RateofInterest"]=int(input("Enter Interest rate on loan: "))
+        loan["Tenure"]=int(input("Enter tenure period of loan: "))
+        addGaur(loan["Guarantee_accnt_no"],loan["AccountNumber"],loan["BranchNumber"]);
+        query="INSERT INTO LOAN("AccountNumber","BranchNumber","E_id","Guarantee_accnt_no","Amount","RateofInterest","Tenure") VALUES (%d,%d,%d,%d,%d,%d,%d)"%(loan["AccountNumber"],loan["BranchNumber"],loan["E_id"],loan["Guarantee_accnt_no"],loan["Amount"],loan["RateofInterest"],loan["Tenure"])
+        print(query)
+        cur.execute(query)
+        con.commit()
+    except Exception as e:
+        con.rollback()
+        print("Failed to insert into database")
+        print (">>>>>>>>>>>>>", e)
 
 def dispatch(ch):
     """
