@@ -1,15 +1,17 @@
 create database BANK;
 use BANK;
 
-drop table if exists TAKES;
 drop table if exists Transactions;
 drop table if exists BRANCH;
 drop table if exists Beneficiary;
-drop table if exists Dependent;
+drop table if exists Dependents;
 drop table if exists Guarantor;
 drop table if exists EMPOLYEE;
-drop table if exists FACULTY;
+drop table if exists Customers;
 drop table if exists Deposit;
+drop table if exists Withdraw;
+
+
 
 create table EMPOLYEE(
 	Id INT, 
@@ -23,9 +25,9 @@ create table EMPOLYEE(
     BranchNumber INT,
     DeptName VARCHAR(30),
     MgrID INT,
-	PRIMARY KEY (RollNumber)
+	PRIMARY KEY (Id)
 );
-create table FACULTY(
+create table Customers(
 	Id INT, 
 	DoB DATE,
     balance INT,
@@ -38,58 +40,55 @@ create table FACULTY(
     Sex varchar(30)
 );
 create table Deposit( 
-Transaction_id
+    
+    
+    Transaction_id INT,
+     Account_Number INT,
+     Branch_Number INT
 
-	Name VARCHAR(30) NOT NULL, 
-	Location VARCHAR(30), 
-	Head VARCHAR(5), 
-	PRIMARY KEY(RID)
 );
+create table Withdraw( 
+    
+    
+    Transaction_id INT,
+     Account_Number INT,
+     Branch_Number INT
+
+);
+
 create table Guarantor (
-	FID VARCHAR(5), 
-	RID VARCHAR(5), 
-	FOREIGN KEY (FID) REFERENCES FACULTY(FID), 
-	FOREIGN KEY (RID) REFERENCES Deposit(RID)
+Cus_acc_no INT,
+Account_Number INT,
+Branch_NO INT,
+G_name INT
+	
 );
-create table Dependent (
-	SID VARCHAR(5), 
-	StartDate DATE, 
-	EndDate DATE, 
-	PRIMARY KEY(SID)
+create table Dependents (
+	E_id INT,
+    Mob_no INT,
+    Relationship varchar(20),
+    DOB date 
 );
 create table Beneficiary (
-	CNO VARCHAR(5), 
-	CName VARCHAR(30) NOT NULL, 
-	Level INT, 
-	NumberOfCredits INT NOT NULL, 
-	PRIMARY KEY (CNO)
+	Cus_acc_no INT,
+    Mob_no INT,
+    Relationship varchar(20),
+    DOB date 
 );
 create table BRANCH(
-	CNO VARCHAR(5), 
-	PRCNO VARCHAR (5),
-	PRIMARY KEY (CNO,PRCNO), 
-	FOREIGN KEY (PRCNO) REFERENCES Beneficiary  (CNO), 
-	FOREIGN KEY (CNO) REFERENCES Beneficiary  (CNO)
+    Branch_no int,
+    IFCE_Code INT,
+    Locations varchar(30),
+    B_mgrId INT
+	
 );
 create table Transactions(
-	CNO VARCHAR(5), 
-	SNO VARCHAR(5) , 
-	PRIMARY KEY(CNO,SNO), 
-	FOREIGN KEY (CNO) REFERENCES Beneficiary (CNO) 
+	Cus_acc_no INT,
+    TRANSACTIONID INT,
+    Amount INT,
+    accType VARchar(20) 
 );
-create table TAKES(
-	FID VARCHAR(5), 
-	RollNo INT, 
-	CNO VARCHAR(5), 
-	SNO VARCHAR(5), 
-	SID VARCHAR(5), 
-	Attendance DECIMAL(6,3), 
-	Grade VARCHAR(2), 
-	FOREIGN KEY (FID) REFERENCES FACULTY(FID),
-	FOREIGN KEY (RollNo) REFERENCES EMPOLYEE(RollNumber),
-	FOREIGN KEY (CNO,SNO) REFERENCES Transactions(CNO,SNO),
-	FOREIGN KEY (SID) REFERENCES Dependent (SID)
-);
+
 
 INSERT INTO EMPOLYEE VALUES (111,'M','1993-02-01','111@i.ac.in',2011,8.56,'Apun','Aur','Pappu');
 INSERT INTO EMPOLYEE VALUES (112,'F','1993-07-05','112@i.ac.in',2011,9.58,'Nita','Rit','Soni');
@@ -115,16 +114,16 @@ INSERT INTO EMPOLYEE VALUES (131,'F','1996-09-12','131@i.ac.in',2015,5.3,'Ronak'
 INSERT INTO EMPOLYEE VALUES (132,'F','1993-08-04','132@i.ac.in',2012,7.7,'Ropal','Bala','Tak');
 INSERT INTO EMPOLYEE VALUES (133,'M','2009-01-13','133@i.ac.in',2011,10,'Akhil','Prakash','Gupta');
 
-INSERT INTO FACULTY VALUES ('F11','Rakesh Gupta','221 WH','F11@i.ac.in','8888888887','a.ac.in/F11');
-INSERT INTO FACULTY VALUES ('F12','Nyna Chari','331 WH','F12@i.ac.in','9898745548','a.ac.in/F12');
-INSERT INTO FACULTY VALUES ('F13','Ryna Sharma','335 WH','F13@i.ac.in','9874589632','a.ac.in/F13');
-INSERT INTO FACULTY VALUES ('F14','Syna Rao','118 WH','F14@i.ac.in','7894587459','a.ac.in/F14');
-INSERT INTO FACULTY VALUES ('F15','Rini Jha','120 WH','F15@i.ac.in','8978452225','a.ac.in/F15');
-INSERT INTO FACULTY VALUES ('F16','Tanvir Ahmed','330 WH','F16@i.ac.in','9865478542','a.ac.in/F16');
-INSERT INTO FACULTY VALUES ('F17','Sarfaraz Masood','320 WH','F17@i.ac.in','8965231478','a.ac.in/F17');
-INSERT INTO FACULTY VALUES ('F18','Amita Patil','100 RH','F18@i.ac.in','9658321232','a.ac.in/F18');
-INSERT INTO FACULTY VALUES ('F19','Gaurav Gupta','101 RH','F19@i.ac.in','9878142536','a.ac.in/F19');
-INSERT INTO FACULTY VALUES ('F20','Moulik Pal','105 RH','F20@i.ac.in','9874586954','a.ac.in/F20');
+INSERT INTO Customers VALUES ('F11','Rakesh Gupta','221 WH','F11@i.ac.in','8888888887','a.ac.in/F11');
+INSERT INTO Customers VALUES ('F12','Nyna Chari','331 WH','F12@i.ac.in','9898745548','a.ac.in/F12');
+INSERT INTO Customers VALUES ('F13','Ryna Sharma','335 WH','F13@i.ac.in','9874589632','a.ac.in/F13');
+INSERT INTO Customers VALUES ('F14','Syna Rao','118 WH','F14@i.ac.in','7894587459','a.ac.in/F14');
+INSERT INTO Customers VALUES ('F15','Rini Jha','120 WH','F15@i.ac.in','8978452225','a.ac.in/F15');
+INSERT INTO Customers VALUES ('F16','Tanvir Ahmed','330 WH','F16@i.ac.in','9865478542','a.ac.in/F16');
+INSERT INTO Customers VALUES ('F17','Sarfaraz Masood','320 WH','F17@i.ac.in','8965231478','a.ac.in/F17');
+INSERT INTO Customers VALUES ('F18','Amita Patil','100 RH','F18@i.ac.in','9658321232','a.ac.in/F18');
+INSERT INTO Customers VALUES ('F19','Gaurav Gupta','101 RH','F19@i.ac.in','9878142536','a.ac.in/F19');
+INSERT INTO Customers VALUES ('F20','Moulik Pal','105 RH','F20@i.ac.in','9874586954','a.ac.in/F20');
 
 INSERT INTO Deposit VALUES ("R1","Understanding Data Centre","225 PH","F13");
 INSERT INTO Deposit VALUES ("R2","Wireless Networks Centre","118 AH","F11");
@@ -146,10 +145,10 @@ INSERT INTO Guarantor  VALUES ("F19","R6");
 INSERT INTO Guarantor  VALUES ("F17","R5");
 INSERT INTO Guarantor  VALUES ("F20","R6");
 
-INSERT INTO Dependent  VALUES ("Sem1",'2007-08-01','2007-12-27');
-INSERT INTO Dependent  VALUES ("Sem2",'2007-12-28','2008-05-08');
-INSERT INTO Dependent  VALUES ("Sem3",'2008-08-01','2008-12-27');
-INSERT INTO Dependent  VALUES ("Sem4",'2008-12-28','2009-05-08');
+INSERT INTO Dependents  VALUES ("Sem1",'2007-08-01','2007-12-27');
+INSERT INTO Dependents  VALUES ("Sem2",'2007-12-28','2008-05-08');
+INSERT INTO Dependents  VALUES ("Sem3",'2008-08-01','2008-12-27');
+INSERT INTO Dependents  VALUES ("Sem4",'2008-12-28','2009-05-08');
 
 INSERT INTO Beneficiary  VALUES ("C11","Automata Theory",1,5);
 INSERT INTO Beneficiary  VALUES ("C12","Data structure and programming",1,5);
